@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Travelguide</title>
+<meta name="description" content="Finde dein nächstes Reiseziel nach Wetter, Flugpreis, Sicherheitslage, Budget und Interessen.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="#/">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.8 3 2.8 15 0 18"/><path d="M12 3c-2.8 3-2.8 15 0 18"/></svg>
+      <span>Travelguide</span>
+    </a>
+    <nav class="header-nav" aria-label="Hauptnavigation">
+      <a href="#/fragen/1">Neue Suche</a>
+      <a href="#/ergebnisse" data-needs-answers>Meine Ergebnisse</a>
+    </nav>
+  </div>
+</header>
+
+<main id="app" class="wrap" tabindex="-1"></main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>Erster Entwurf. Flugpreise und Tageskosten sind noch Schätzungen. Klima: Open-Meteo, Mittel 2023 bis 2025. Sicherheitslage: Auswärtiges Amt, Stand <span id="safety-date"></span>.</p>
+  </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/data/destinations.js"></script>
+<script src="js/data/climate.js"></script>
+<script src="js/data/safety.js"></script>
+<script src="js/scoring.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

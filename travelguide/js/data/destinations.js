@@ -1,0 +1,76 @@
+// Reiseziele für den ersten Entwurf.
+// dailyCost = grobe Schätzung in € pro Person und Tag (Mittelklasse-Unterkunft im Doppelzimmer anteilig, Essen, Nahverkehr).
+// flightFactor passt die Flugpreis-Schätzung an (Billigflieger-Ziel < 1, schwer erreichbar > 1).
+// Alle Kostenwerte sind Schätzungen und müssen später durch echte Daten ersetzt werden.
+window.TG_DESTINATIONS = [
+  { id: 'lissabon', city: 'Lissabon', country: 'Portugal', cc: 'PT', lat: 38.72, lon: -9.14, iata: 'LIS', region: 'Europa', dailyCost: 95, flightFactor: 0.9, tags: ['Stadt', 'Kultur', 'Essen', 'Strand', 'Nachtleben'], text: 'Hügelige Altstadt, Aussichtspunkte und Strände in einer halben Stunde Zugfahrt.' },
+  { id: 'algarve', city: 'Algarve (Faro)', country: 'Portugal', cc: 'PT', lat: 37.02, lon: -7.93, iata: 'FAO', region: 'Europa', dailyCost: 90, flightFactor: 0.9, tags: ['Strand', 'Natur', 'Ruhe', 'Essen'], text: 'Felsbuchten, Klippenwanderwege und kleine Fischerorte.' },
+  { id: 'madeira', city: 'Madeira (Funchal)', country: 'Portugal', cc: 'PT', lat: 32.65, lon: -16.91, iata: 'FNC', region: 'Europa', dailyCost: 90, flightFactor: 1.0, tags: ['Natur', 'Abenteuer', 'Ruhe'], text: 'Levada-Wanderungen durch Lorbeerwald, das ganze Jahr mild.' },
+  { id: 'malaga', city: 'Málaga', country: 'Spanien', cc: 'ES', lat: 36.72, lon: -4.42, iata: 'AGP', region: 'Europa', dailyCost: 95, flightFactor: 0.8, tags: ['Strand', 'Kultur', 'Essen', 'Stadt'], text: 'Stadtstrand, Picasso-Museum und Tapas-Bars, gute Basis für Andalusien.' },
+  { id: 'barcelona', city: 'Barcelona', country: 'Spanien', cc: 'ES', lat: 41.39, lon: 2.17, iata: 'BCN', region: 'Europa', dailyCost: 120, flightFactor: 0.8, tags: ['Stadt', 'Kultur', 'Strand', 'Nachtleben', 'Essen'], text: 'Gaudí-Architektur, Märkte und Strand direkt an der Stadt.' },
+  { id: 'mallorca', city: 'Mallorca (Palma)', country: 'Spanien', cc: 'ES', lat: 39.57, lon: 2.65, iata: 'PMI', region: 'Europa', dailyCost: 105, flightFactor: 0.7, tags: ['Strand', 'Natur', 'Nachtleben'], text: 'Buchten, Tramuntana-Gebirge und sehr viele Direktflüge.' },
+  { id: 'teneriffa', city: 'Teneriffa', country: 'Spanien', cc: 'ES', lat: 28.05, lon: -16.72, iata: 'TFS', region: 'Europa', dailyCost: 90, flightFactor: 1.0, tags: ['Strand', 'Natur', 'Abenteuer'], text: 'Vulkan Teide, schwarze Strände und Wärme auch im Winter.' },
+  { id: 'kreta', city: 'Kreta (Heraklion)', country: 'Griechenland', cc: 'GR', lat: 35.34, lon: 25.13, iata: 'HER', region: 'Europa', dailyCost: 80, flightFactor: 0.95, tags: ['Strand', 'Natur', 'Kultur', 'Ruhe', 'Essen'], text: 'Schluchten, Strände und minoische Ausgrabungen auf einer Insel.' },
+  { id: 'athen', city: 'Athen', country: 'Griechenland', cc: 'GR', lat: 37.98, lon: 23.73, iata: 'ATH', region: 'Europa', dailyCost: 90, flightFactor: 0.9, tags: ['Kultur', 'Stadt', 'Essen', 'Nachtleben'], text: 'Akropolis, Tavernen und Fähren zu den Inseln.' },
+  { id: 'rhodos', city: 'Rhodos', country: 'Griechenland', cc: 'GR', lat: 36.43, lon: 28.22, iata: 'RHO', region: 'Europa', dailyCost: 80, flightFactor: 0.9, tags: ['Strand', 'Kultur', 'Ruhe'], text: 'Mittelalterliche Altstadt und lange Sonnensaison.' },
+  { id: 'sizilien', city: 'Sizilien (Catania)', country: 'Italien', cc: 'IT', lat: 37.5, lon: 15.09, iata: 'CTA', region: 'Europa', dailyCost: 90, flightFactor: 0.9, tags: ['Kultur', 'Essen', 'Strand', 'Natur'], text: 'Ätna, barocke Städte und die beste Granita Italiens.' },
+  { id: 'rom', city: 'Rom', country: 'Italien', cc: 'IT', lat: 41.9, lon: 12.5, iata: 'FCO', region: 'Europa', dailyCost: 120, flightFactor: 0.8, tags: ['Kultur', 'Stadt', 'Essen'], text: 'Antike an jeder Ecke, abends Pasta in Trastevere.' },
+  { id: 'sardinien', city: 'Sardinien (Cagliari)', country: 'Italien', cc: 'IT', lat: 39.22, lon: 9.11, iata: 'CAG', region: 'Europa', dailyCost: 95, flightFactor: 0.95, tags: ['Strand', 'Natur', 'Ruhe'], text: 'Türkisfarbenes Wasser und ruhige Buchten.' },
+  { id: 'split', city: 'Split', country: 'Kroatien', cc: 'HR', lat: 43.51, lon: 16.44, iata: 'SPU', region: 'Europa', dailyCost: 90, flightFactor: 0.9, tags: ['Strand', 'Natur', 'Kultur', 'Nachtleben'], text: 'Diokletianpalast, Inselhopping und Nationalparks in der Nähe.' },
+  { id: 'dubrovnik', city: 'Dubrovnik', country: 'Kroatien', cc: 'HR', lat: 42.65, lon: 18.09, iata: 'DBV', region: 'Europa', dailyCost: 115, flightFactor: 1.0, tags: ['Kultur', 'Strand', 'Stadt'], text: 'Stadtmauer über der Adria, am besten außerhalb der Hochsaison.' },
+  { id: 'kotor', city: 'Kotor', country: 'Montenegro', cc: 'ME', lat: 42.42, lon: 18.77, iata: 'TIV', region: 'Europa', dailyCost: 70, flightFactor: 1.05, tags: ['Natur', 'Kultur', 'Ruhe', 'Abenteuer'], text: 'Bucht wie ein Fjord, Altstadt und Berge direkt am Wasser.' },
+  { id: 'saranda', city: 'Saranda', country: 'Albanien', cc: 'AL', lat: 39.88, lon: 20.0, iata: 'TIA', region: 'Europa', dailyCost: 55, flightFactor: 1.0, tags: ['Strand', 'Ruhe', 'Abenteuer'], text: 'Günstige Riviera mit klarem Wasser und antiken Stätten.' },
+  { id: 'paphos', city: 'Paphos', country: 'Zypern', cc: 'CY', lat: 34.77, lon: 32.42, iata: 'PFO', region: 'Europa', dailyCost: 85, flightFactor: 1.05, tags: ['Strand', 'Ruhe', 'Kultur'], text: 'Sehr viele Sonnenstunden und ein entspanntes Tempo.' },
+  { id: 'malta', city: 'Valletta', country: 'Malta', cc: 'MT', lat: 35.9, lon: 14.51, iata: 'MLA', region: 'Europa', dailyCost: 95, flightFactor: 0.85, tags: ['Kultur', 'Strand', 'Abenteuer'], text: 'Festungsstadt, Tauchspots und kurze Wege.' },
+  { id: 'antalya', city: 'Antalya', country: 'Türkei', cc: 'TR', lat: 36.9, lon: 30.7, iata: 'AYT', region: 'Europa', dailyCost: 60, flightFactor: 0.85, tags: ['Strand', 'Ruhe', 'Kultur'], text: 'Sehr warm, vor Ort günstig, antike Städte im Umland.' },
+  { id: 'istanbul', city: 'Istanbul', country: 'Türkei', cc: 'TR', lat: 41.01, lon: 28.98, iata: 'IST', region: 'Europa', dailyCost: 75, flightFactor: 0.85, tags: ['Stadt', 'Kultur', 'Essen', 'Nachtleben'], text: 'Basare, Moscheen und Fähren zwischen zwei Kontinenten.' },
+  { id: 'nizza', city: 'Nizza', country: 'Frankreich', cc: 'FR', lat: 43.7, lon: 7.27, iata: 'NCE', region: 'Europa', dailyCost: 130, flightFactor: 0.9, tags: ['Strand', 'Stadt', 'Essen'], text: 'Promenade, Altstadtmärkte und Tagesausflüge an die Côte d’Azur.' },
+  { id: 'paris', city: 'Paris', country: 'Frankreich', cc: 'FR', lat: 48.86, lon: 2.35, iata: 'CDG', region: 'Europa', dailyCost: 150, flightFactor: 0.8, tags: ['Stadt', 'Kultur', 'Essen', 'Nachtleben'], text: 'Museen, Cafés und Viertel, die man zu Fuß entdeckt.' },
+  { id: 'amsterdam', city: 'Amsterdam', country: 'Niederlande', cc: 'NL', lat: 52.37, lon: 4.9, iata: 'AMS', region: 'Europa', dailyCost: 140, flightFactor: 0.75, tags: ['Stadt', 'Kultur', 'Nachtleben'], text: 'Grachten, Fahrräder und Museen, auch gut mit dem Zug erreichbar.' },
+  { id: 'kopenhagen', city: 'Kopenhagen', country: 'Dänemark', cc: 'DK', lat: 55.68, lon: 12.57, iata: 'CPH', region: 'Europa', dailyCost: 150, flightFactor: 0.8, tags: ['Stadt', 'Essen', 'Kultur'], text: 'Hafenbäder, Design und neue nordische Küche.' },
+  { id: 'reykjavik', city: 'Reykjavík', country: 'Island', cc: 'IS', lat: 64.15, lon: -21.94, iata: 'KEF', region: 'Europa', dailyCost: 170, flightFactor: 1.1, tags: ['Natur', 'Abenteuer'], text: 'Geysire, Wasserfälle und im Winter Polarlichter.' },
+  { id: 'tromso', city: 'Tromsø', country: 'Norwegen', cc: 'NO', lat: 69.65, lon: 18.96, iata: 'TOS', region: 'Europa', dailyCost: 160, flightFactor: 1.2, tags: ['Natur', 'Abenteuer', 'Ruhe'], text: 'Polarlichter im Winter, Mitternachtssonne im Sommer.' },
+  { id: 'edinburgh', city: 'Edinburgh', country: 'Vereinigtes Königreich', cc: 'GB', lat: 55.95, lon: -3.19, iata: 'EDI', region: 'Europa', dailyCost: 130, flightFactor: 0.9, tags: ['Stadt', 'Kultur', 'Natur'], text: 'Burg, Altstadtgassen und die Highlands vor der Tür.' },
+  { id: 'prag', city: 'Prag', country: 'Tschechien', cc: 'CZ', lat: 50.08, lon: 14.44, iata: 'PRG', region: 'Europa', dailyCost: 80, flightFactor: 0.9, tags: ['Stadt', 'Kultur', 'Nachtleben', 'Essen'], text: 'Gotische Altstadt, günstige Kneipen und Bahnanreise möglich.' },
+  { id: 'budapest', city: 'Budapest', country: 'Ungarn', cc: 'HU', lat: 47.5, lon: 19.04, iata: 'BUD', region: 'Europa', dailyCost: 75, flightFactor: 0.8, tags: ['Stadt', 'Kultur', 'Nachtleben', 'Ruhe'], text: 'Thermalbäder, Ruinenbars und Donaublick.' },
+  { id: 'krakau', city: 'Krakau', country: 'Polen', cc: 'PL', lat: 50.06, lon: 19.94, iata: 'KRK', region: 'Europa', dailyCost: 65, flightFactor: 0.8, tags: ['Stadt', 'Kultur', 'Essen'], text: 'Großer Marktplatz, jüdisches Viertel und niedrige Preise.' },
+  { id: 'marrakesch', city: 'Marrakesch', country: 'Marokko', cc: 'MA', lat: 31.63, lon: -8.0, iata: 'RAK', region: 'Afrika', dailyCost: 65, flightFactor: 0.95, tags: ['Kultur', 'Essen', 'Abenteuer'], text: 'Märkte, Gärten und Ausflüge ins Atlasgebirge oder die Wüste.' },
+  { id: 'djerba', city: 'Djerba', country: 'Tunesien', cc: 'TN', lat: 33.8, lon: 10.85, iata: 'DJE', region: 'Afrika', dailyCost: 55, flightFactor: 1.0, tags: ['Strand', 'Ruhe'], text: 'Lange Sandstrände und günstige Hotels.' },
+  { id: 'hurghada', city: 'Hurghada', country: 'Ägypten', cc: 'EG', lat: 27.26, lon: 33.81, iata: 'HRG', region: 'Afrika', dailyCost: 60, flightFactor: 0.95, tags: ['Strand', 'Abenteuer', 'Ruhe'], text: 'Korallenriffe zum Schnorcheln und Wärme im Winter.' },
+  { id: 'kapstadt', city: 'Kapstadt', country: 'Südafrika', cc: 'ZA', lat: -33.92, lon: 18.42, iata: 'CPT', region: 'Afrika', dailyCost: 85, flightFactor: 1.0, tags: ['Natur', 'Stadt', 'Abenteuer', 'Essen', 'Strand'], text: 'Tafelberg, Weinregion und Pinguine am Strand.' },
+  { id: 'sansibar', city: 'Sansibar', country: 'Tansania', cc: 'TZ', lat: -6.16, lon: 39.19, iata: 'ZNZ', region: 'Afrika', dailyCost: 80, flightFactor: 1.1, tags: ['Strand', 'Kultur', 'Ruhe'], text: 'Weiße Strände und die Gassen von Stone Town.' },
+  { id: 'dubai', city: 'Dubai', country: 'Vereinigte Arabische Emirate', cc: 'AE', lat: 25.2, lon: 55.27, iata: 'DXB', region: 'Asien', dailyCost: 140, flightFactor: 0.9, tags: ['Stadt', 'Strand', 'Abenteuer'], text: 'Wüste, Wolkenkratzer und Strand im Winter.' },
+  { id: 'jordanien', city: 'Amman und Petra', country: 'Jordanien', cc: 'JO', lat: 31.95, lon: 35.93, iata: 'AMM', region: 'Asien', dailyCost: 85, flightFactor: 1.0, tags: ['Kultur', 'Abenteuer', 'Natur'], text: 'Felsenstadt Petra, Wadi Rum und das Tote Meer.' },
+  { id: 'bangkok', city: 'Bangkok', country: 'Thailand', cc: 'TH', lat: 13.76, lon: 100.5, iata: 'BKK', region: 'Asien', dailyCost: 55, flightFactor: 0.95, tags: ['Stadt', 'Essen', 'Kultur', 'Nachtleben'], text: 'Tempel, Garküchen und ein guter Start für eine Rundreise.' },
+  { id: 'phuket', city: 'Phuket', country: 'Thailand', cc: 'TH', lat: 7.88, lon: 98.39, iata: 'HKT', region: 'Asien', dailyCost: 65, flightFactor: 1.05, tags: ['Strand', 'Nachtleben', 'Abenteuer'], text: 'Strände, Bootstouren zu Kalksteininseln und Nachtmärkte.' },
+  { id: 'bali', city: 'Bali', country: 'Indonesien', cc: 'ID', lat: -8.65, lon: 115.22, iata: 'DPS', region: 'Asien', dailyCost: 55, flightFactor: 1.1, tags: ['Strand', 'Natur', 'Kultur', 'Ruhe'], text: 'Reisterrassen, Tempel und Surfstrände.' },
+  { id: 'hanoi', city: 'Hanoi', country: 'Vietnam', cc: 'VN', lat: 21.03, lon: 105.85, iata: 'HAN', region: 'Asien', dailyCost: 45, flightFactor: 1.05, tags: ['Stadt', 'Essen', 'Kultur', 'Abenteuer'], text: 'Altstadt, Streetfood und die Halong-Bucht in Reichweite.' },
+  { id: 'srilanka', city: 'Sri Lanka (Colombo)', country: 'Sri Lanka', cc: 'LK', lat: 6.93, lon: 79.86, iata: 'CMB', region: 'Asien', dailyCost: 50, flightFactor: 1.05, tags: ['Natur', 'Strand', 'Kultur', 'Abenteuer'], text: 'Teeplantagen, Safaris und Strände auf kleinem Raum.' },
+  { id: 'malediven', city: 'Malediven (Malé)', country: 'Malediven', cc: 'MV', lat: 4.18, lon: 73.51, iata: 'MLE', region: 'Asien', dailyCost: 180, flightFactor: 1.15, tags: ['Strand', 'Ruhe'], text: 'Lagunen und Hausriffe, eher teuer, Gästehäuser sind günstiger.' },
+  { id: 'tokio', city: 'Tokio', country: 'Japan', cc: 'JP', lat: 35.68, lon: 139.69, iata: 'HND', region: 'Asien', dailyCost: 120, flightFactor: 1.05, tags: ['Stadt', 'Kultur', 'Essen', 'Nachtleben'], text: 'Riesige Stadt, ruhige Schreine und das beste Essen der Reise.' },
+  { id: 'singapur', city: 'Singapur', country: 'Singapur', cc: 'SG', lat: 1.35, lon: 103.82, iata: 'SIN', region: 'Asien', dailyCost: 130, flightFactor: 1.0, tags: ['Stadt', 'Essen'], text: 'Hawker-Center, Gärten und ein guter Zwischenstopp.' },
+  { id: 'newyork', city: 'New York', country: 'Vereinigte Staaten', cc: 'US', lat: 40.71, lon: -74.01, iata: 'JFK', region: 'Amerika', dailyCost: 190, flightFactor: 0.9, tags: ['Stadt', 'Kultur', 'Nachtleben', 'Essen'], text: 'Museen, Viertel mit eigenem Charakter und Skyline-Blicke.' },
+  { id: 'cancun', city: 'Cancún', country: 'Mexiko', cc: 'MX', lat: 21.16, lon: -86.85, iata: 'CUN', region: 'Amerika', dailyCost: 90, flightFactor: 1.0, tags: ['Strand', 'Kultur', 'Abenteuer', 'Nachtleben'], text: 'Karibikstrände, Cenoten und Maya-Ruinen.' },
+  { id: 'havanna', city: 'Havanna', country: 'Kuba', cc: 'CU', lat: 23.11, lon: -82.37, iata: 'HAV', region: 'Amerika', dailyCost: 70, flightFactor: 1.1, tags: ['Kultur', 'Strand', 'Nachtleben'], text: 'Oldtimer, Musik auf der Straße und Karibikstrände.' },
+  { id: 'costarica', city: 'Costa Rica (San José)', country: 'Costa Rica', cc: 'CR', lat: 9.93, lon: -84.08, iata: 'SJO', region: 'Amerika', dailyCost: 95, flightFactor: 1.1, tags: ['Natur', 'Abenteuer', 'Strand'], text: 'Regenwald, Vulkane und zwei Küsten.' },
+  { id: 'rio', city: 'Rio de Janeiro', country: 'Brasilien', cc: 'BR', lat: -22.91, lon: -43.17, iata: 'GIG', region: 'Amerika', dailyCost: 85, flightFactor: 1.05, tags: ['Strand', 'Stadt', 'Nachtleben', 'Natur'], text: 'Copacabana, Zuckerhut und Samba.' },
+  { id: 'peru', city: 'Peru (Cusco)', country: 'Peru', cc: 'PE', lat: -13.53, lon: -71.97, iata: 'CUZ', region: 'Amerika', dailyCost: 65, flightFactor: 1.2, tags: ['Kultur', 'Abenteuer', 'Natur'], text: 'Machu Picchu, Inka-Pfade und Hochland auf 3.400 Metern.' },
+  { id: 'sydney', city: 'Sydney', country: 'Australien', cc: 'AU', lat: -33.87, lon: 151.21, iata: 'SYD', region: 'Ozeanien', dailyCost: 150, flightFactor: 1.0, tags: ['Stadt', 'Strand', 'Natur'], text: 'Hafen, Bondi Beach und Nationalparks am Stadtrand.' }
+];
+
+// Abflughäfen im deutschsprachigen Raum.
+window.TG_AIRPORTS = [
+  { iata: 'FRA', name: 'Frankfurt', lat: 50.04, lon: 8.56 },
+  { iata: 'MUC', name: 'München', lat: 48.35, lon: 11.79 },
+  { iata: 'BER', name: 'Berlin', lat: 52.37, lon: 13.5 },
+  { iata: 'HAM', name: 'Hamburg', lat: 53.63, lon: 9.99 },
+  { iata: 'DUS', name: 'Düsseldorf', lat: 51.29, lon: 6.77 },
+  { iata: 'CGN', name: 'Köln/Bonn', lat: 50.87, lon: 7.14 },
+  { iata: 'STR', name: 'Stuttgart', lat: 48.69, lon: 9.22 },
+  { iata: 'HAJ', name: 'Hannover', lat: 52.46, lon: 9.69 },
+  { iata: 'NUE', name: 'Nürnberg', lat: 49.5, lon: 11.08 },
+  { iata: 'VIE', name: 'Wien', lat: 48.11, lon: 16.57 },
+  { iata: 'ZRH', name: 'Zürich', lat: 47.46, lon: 8.55 }
+];
+
+window.TG_INTERESTS = ['Strand', 'Kultur', 'Natur', 'Stadt', 'Essen', 'Abenteuer', 'Ruhe', 'Nachtleben'];
