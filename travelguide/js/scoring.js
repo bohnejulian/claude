@@ -106,6 +106,9 @@
 
     data.destinations.forEach(function (d) {
       var flight = estimateFlight(airport, d, month);
+      // Echter Preis aus der Flug-API, falls vorhanden (data.flightPrices[IATA] = { price, airline, transfers, link }).
+      var live = data.flightPrices && data.flightPrices[d.iata];
+      if (live && live.price) flight = Object.assign({}, flight, { price: Math.round(live.price), live: live });
       var safety = safetyInfo(data.safety[d.cc]);
       if (excluded.indexOf(d.cc) >= 0) return filtered.push({ dest: d, reason: 'Von dir ausgeschlossen' });
       if (safety.blocked) return filtered.push({ dest: d, reason: 'Reisewarnung des Auswärtigen Amts' });

@@ -226,3 +226,28 @@ legend { font-weight: 600; margin-bottom: 12px; }
 
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
 .why li.none { color: var(--muted); list-style: none; margin-left: -20px; }
+
+/* Merken, Live-Hinweis, Merkliste, Rechtliches */
+.save { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
+.save[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.save[aria-pressed="true"] svg { fill: currentColor; }
+.save-compact { min-height: 36px; padding: 0 12px; font-size: 14px; border-color: #5D7A90; background: transparent; color: var(--flap-ink); }
+.save-compact[aria-pressed="true"] { background: var(--flap-ink); color: var(--board); border-color: var(--flap-ink); }
+.compare .save-compact { color: var(--ink); border-color: var(--ink); }
+.compare .save-compact[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.result-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 6px; }
+.result-cost i { font-style: normal; font-weight: 500; font-size: 12px; color: var(--good); }
+.detail-side { display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+.detail-side .save { justify-content: center; }
+.compare-wrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); }
+.compare { border-collapse: collapse; width: 100%; min-width: 520px; }
+.compare th, .compare td { text-align: left; vertical-align: top; padding: 14px 16px; border-bottom: 1px solid var(--line-soft); }
+.compare thead th { font-family: var(--display); font-size: 19px; font-weight: 500; }
+.compare thead th small { display: block; font-family: var(--body); color: var(--muted); }
+.compare tbody th { color: var(--muted); font-weight: 500; font-size: 14px; width: 150px; }
+.compare small { color: var(--muted); }
+.over-text { color: var(--warn-ink) !important; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.legal { max-width: 70ch; }
+.footer-links { display: flex; gap: 20px; margin: 0; }
+.footer-links a { color: var(--muted); }

@@ -7,11 +7,14 @@
     destinations: window.TG_DESTINATIONS,
     airports: window.TG_AIRPORTS,
     climate: window.TG_CLIMATE.data,
-    safety: window.TG_SAFETY.data
+    safety: window.TG_SAFETY.data,
+    flightPrices: {}
   };
+  var safetyMeta = { fetchedAt: window.TG_SAFETY.fetchedAt, live: false };
   var MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
   var MONTHS_SHORT = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
   var STORE_KEY = 'travelguide.answers.v1';
+  var SAVED_KEY = 'travelguide.saved.v1';
   var STEPS = 6;
   var app = document.getElementById('app');
 
@@ -49,6 +52,79 @@
 
   var answers = load();
 
+  function loadSaved() {
+    try { return JSON.parse(localStorage.getItem(SAVED_KEY)) || []; } catch (e) { return []; }
+  }
+  var saved = loadSaved();
+  function toggleSaved(id) {
+    var i = saved.indexOf(id);
+    if (i >= 0) saved.splice(i, 1); else saved.push(id);
+    try { localStorage.setItem(SAVED_KEY, JSON.stringify(saved)); } catch (e) { /* egal */ }
+    updateSavedNav();
+    return i < 0;
+  }
+  function saveButton(id, compact) {
+    var on = saved.indexOf(id) >= 0;
+    return '<button type="button" class="save' + (compact ? ' save-compact' : '') + '" data-save="' + id + '" aria-pressed="' + on + '">' +
+      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>' +
+      '<span>' + (on ? 'Gemerkt' : 'Merken') + '</span></button>';
+  }
+  function bindSaveButtons(scope) {
+    scope.querySelectorAll('[data-save]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var on = toggleSaved(b.getAttribute('data-save'));
+        b.setAttribute('aria-pressed', on);
+        b.querySelector('span').textContent = on ? 'Gemerkt' : 'Merken';
+      });
+    });
+  }
+  function updateSavedNav() {
+    var a = document.getElementById('nav-saved');
+    if (a) a.textContent = saved.length ? 'Merkliste (' + saved.length + ')' : 'Merkliste';
+  }
+
+  // ---------- Live-Daten über die eigenen Server-Funktionen (/api/...) ----------
+  // Lokal (Datei geöffnet) oder ohne Server gibt es sie nicht, dann bleiben Schnappschuss und Schätzung.
+
+  var apiAvailable = /^https?:$/.test(location.protocol);
+  var priceRequests = {};
+
+  function api(path) {
+    if (!apiAvailable) return Promise.resolve(null);
+    return fetch('api/' + path).then(function (res) {
+      var type = res.headers.get('content-type') || '';
+      if (!res.ok || type.indexOf('json') < 0) return null;
+      return res.json();
+    }).catch(function () { return null; });
+  }
+
+  function refreshSafety() {
+    api('safety').then(function (json) {
+      if (!json || !json.data) return;
+      Object.keys(json.data).forEach(function (cc) { DATA.safety[cc] = json.data[cc]; });
+      safetyMeta = { fetchedAt: json.fetchedAt, live: true };
+      document.getElementById('safety-date').textContent = fmtDate(json.fetchedAt.slice(0, 10)) + ' (live)';
+    });
+  }
+
+  // Holt echte Flugpreise für die angezeigten Ziele und ruft danach done() auf, wenn sich etwas geändert hat.
+  function ensurePrices(results, done) {
+    var month = answers.startDate.slice(0, 7);
+    var key = answers.airport + '|' + month;
+    if (DATA.flightPrices.key !== key) DATA.flightPrices = { key: key };
+    var missing = results.map(function (r) { return r.dest.iata; }).filter(function (iata) {
+      return !(key + iata in priceRequests);
+    });
+    if (!missing.length || !apiAvailable) return;
+    missing.forEach(function (iata) { priceRequests[key + iata] = true; });
+    api('flights?origin=' + answers.airport + '&month=' + month + '&dest=' + missing.join(',')).then(function (json) {
+      if (!json || !json.prices || DATA.flightPrices.key !== key) return;
+      var changed = false;
+      Object.keys(json.prices).forEach(function (iata) { DATA.flightPrices[iata] = json.prices[iata]; changed = true; });
+      if (changed) done();
+    });
+  }
+
   // ---------- Helfer ----------
 
   function esc(v) {
@@ -82,8 +158,9 @@
     return '<button type="button" class="chip" aria-pressed="' + (pressed ? 'true' : 'false') + '" ' + attrs + '>' + esc(label) + '</button>';
   }
 
-  function render(html) {
+  function render(html, keepScroll) {
     app.innerHTML = html;
+    if (keepScroll) return;
     app.focus({ preventScroll: true });
     window.scrollTo(0, 0);
   }
@@ -352,6 +429,8 @@
         '<ol class="board-list">' + top.map(resultRow).join('') + '</ol>' +
       '</div>' +
       filteredBlock(r.filtered);
+    bindSaveButtons(el);
+    ensurePrices(r.results.slice(0, 15), function () { if (document.getElementById('board')) drawBoard(); });
   }
 
   function resultRow(r, i) {
@@ -360,7 +439,7 @@
       '<a class="result-main" href="#/ziel/' + d.id + '">' +
         '<span class="result-rank" aria-hidden="true">' + (i + 1) + '</span>' +
         '<span class="result-name"><strong>' + esc(d.city) + '</strong><small>' + esc(d.country) + '</small></span>' +
-        '<span class="result-cost' + (r.overBudget ? ' over' : '') + '"><small>Kosten p. P.</small>' + euro(r.total) + (r.overBudget ? '<em>über Budget</em>' : '') + '</span>' +
+        '<span class="result-cost' + (r.overBudget ? ' over' : '') + '"><small>Kosten p. P.</small>' + euro(r.total) + (r.overBudget ? '<em>über Budget</em>' : '') + (r.flight.live ? '<i>Flug live</i>' : '') + '</span>' +
         '<span class="result-flight"><small>Flug</small>' + hours(r.flight.hours) + '</span>' +
         '<span class="result-weather"><small>Wetter</small>' + Math.round(r.climate.t) + ' °C</span>' +
         flap(r.score) +
@@ -368,7 +447,7 @@
       '<div class="result-why">' +
         (r.reasons.pros.length ? '<ul class="pros">' + r.reasons.pros.slice(0, 3).map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>' : '') +
         (r.reasons.cons.length ? '<ul class="cons">' + r.reasons.cons.slice(0, 2).map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>' : '') +
-        safetyBadge(r.safety) +
+        '<div class="result-tools">' + safetyBadge(r.safety) + saveButton(d.id, true) + '</div>' +
       '</div>' +
     '</li>';
   }
@@ -386,7 +465,7 @@
 
   // ---------- Detailseite ----------
 
-  function viewDetail(id) {
+  function viewDetail(id, keepScroll) {
     var ranked = S.rank(Object.assign({}, answers, { excluded: [], maxFlight: 'egal' }), DATA);
     var r = ranked.results.filter(function (x) { return x.dest.id === id; })[0];
     if (!r) { render('<div class="empty"><h1>Ziel nicht gefunden</h1><a class="btn btn-primary" href="#/ergebnisse">Zu den Ergebnissen</a></div>'); return; }
@@ -405,7 +484,7 @@
             '<h1>' + esc(d.city) + '<span>' + esc(d.country) + '</span></h1>' +
             '<p class="lead">' + esc(d.text) + '</p>' +
           '</div>' +
-          '<div class="detail-score">' + flap(r.score) + '<small>von 100 Punkten</small></div>' +
+          '<div class="detail-side"><div class="detail-score">' + flap(r.score) + '<small>von 100 Punkten</small></div>' + saveButton(d.id) + '</div>' +
         '</header>' +
 
         '<section class="factors" aria-label="Punkte je Kriterium">' +
@@ -439,13 +518,15 @@
           '<section class="panel">' +
             '<h2>Kosten pro Person</h2>' +
             '<dl class="costs">' +
-              '<div><dt>Flug hin und zurück ab ' + esc(ranked.airport.iata) + '</dt><dd>ca. ' + euro(r.flight.price) + '</dd></div>' +
+              '<div><dt>Flug hin und zurück ab ' + esc(ranked.airport.iata) + (r.flight.live ? ', live gefunden' : '') + '</dt><dd>' + (r.flight.live ? 'ab ' : 'ca. ') + euro(r.flight.price) + '</dd></div>' +
               '<div><dt>Aufenthalt, ' + answers.days + ' Tage zu ca. ' + euro(d.dailyCost) + '</dt><dd>ca. ' + euro(r.stay) + '</dd></div>' +
               '<div class="total"><dt>Gesamt</dt><dd>ca. ' + euro(r.total) + '</dd></div>' +
               (people > 1 ? '<div><dt>Für ' + people + ' Personen</dt><dd>ca. ' + euro(r.total * people) + '</dd></div>' : '') +
             '</dl>' +
             '<span class="badge ' + (r.overBudget ? 'badge-teilwarnung' : 'badge-ok') + '">' + (r.overBudget ? euro(r.total - answers.budget) + ' über deinem Budget' : 'Im Budget von ' + euro(answers.budget)) + '</span>' +
-            '<p class="source">Schätzung: Flug nach Entfernung (' + r.flight.km.toLocaleString('de-DE') + ' km, ca. ' + hours(r.flight.hours) + ') und Saison, Tageskosten als Richtwert. Live-Preise folgen.</p>' +
+            (r.flight.live
+              ? '<p class="source">Flugpreis: günstigster Treffer bei Travelpayouts/Aviasales für ' + MONTHS[r.month] + (r.flight.live.transfers === 0 ? ', Direktflug' : r.flight.live.transfers ? ', ' + r.flight.live.transfers + ' Umstieg(e)' : '') + '. Tageskosten sind ein Richtwert.</p>'
+              : '<p class="source">Schätzung: Flug nach Entfernung (' + r.flight.km.toLocaleString('de-DE') + ' km, ca. ' + hours(r.flight.hours) + ') und Saison, Tageskosten als Richtwert.</p>') +
           '</section>' +
         '</div>' +
 
@@ -467,9 +548,12 @@
           '</div>' +
           '<p class="source">Hinweis für später: Wenn hier Partnerlinks hinterlegt sind, erhalten wir ggf. eine Provision. Der Preis für dich bleibt gleich.</p>' +
         '</section>' +
-      '</article>'
+      '</article>',
+      keepScroll
     );
+    bindSaveButtons(app);
     loadLiveWeather(d, answers.startDate, answers.days);
+    ensurePrices([r], function () { if (location.hash === '#/ziel/' + id) viewDetail(id, true); });
   }
 
   function stat(label, value) {
@@ -558,6 +642,63 @@
     return id ? url + '&aid=' + encodeURIComponent(id) : url;
   }
 
+  // ---------- Merkliste ----------
+
+  function viewSaved() {
+    var ranked = S.rank(Object.assign({}, answers, { excluded: [], maxFlight: 'egal' }), DATA).results;
+    var list = saved.map(function (id) { return ranked.filter(function (r) { return r.dest.id === id; })[0]; }).filter(Boolean);
+    if (!list.length) {
+      render('<section class="saved"><h1>Merkliste</h1><div class="empty"><p>Hier landen Ziele, die du dir merkst. Auf der Ergebnisliste und jeder Detailseite gibt es dafür den Knopf „Merken“.</p>' +
+        '<a class="btn btn-primary" href="' + (answers.done ? '#/ergebnisse' : '#/fragen/1') + '">' + (answers.done ? 'Zu den Ergebnissen' : 'Reiseziel finden') + '</a></div></section>');
+      return;
+    }
+    var rows = [
+      ['Match', function (r) { return '<strong>' + r.score + '</strong> von 100'; }],
+      ['Kosten p. P.', function (r) { return euro(r.total) + (r.overBudget ? '<br><small class="over-text">über Budget</small>' : ''); }],
+      ['Flug', function (r) { return (r.flight.live ? 'ab ' : 'ca. ') + euro(r.flight.price) + '<br><small>' + hours(r.flight.hours) + '</small>'; }],
+      ['Wetter im ' + MONTHS[list[0].month], function (r) { return Math.round(r.climate.t) + ' °C<br><small>' + Math.round(r.climate.sun) + ' h Sonne, ' + r.climate.rain + ' Regentage</small>'; }],
+      ['Sicherheit', function (r) { return safetyBadge(r.safety); }],
+      ['Passt zu', function (r) { return r.matched.length ? esc(r.matched.join(', ')) : '<small>keinem deiner Interessen</small>'; }]
+    ];
+    render(
+      '<section class="saved">' +
+        '<h1>Merkliste</h1>' +
+        '<p class="summary">Deine gemerkten Ziele im Vergleich, berechnet mit deinen aktuellen Angaben.</p>' +
+        '<div class="compare-wrap"><table class="compare">' +
+          '<thead><tr><th scope="col"><span class="sr">Kriterium</span></th>' + list.map(function (r) {
+            return '<th scope="col"><a href="#/ziel/' + r.dest.id + '">' + esc(r.dest.city) + '</a><small>' + esc(r.dest.country) + '</small></th>';
+          }).join('') + '</tr></thead>' +
+          '<tbody>' + rows.map(function (row) {
+            return '<tr><th scope="row">' + row[0] + '</th>' + list.map(function (r) { return '<td>' + row[1](r) + '</td>'; }).join('') + '</tr>';
+          }).join('') +
+          '<tr><th scope="row"><span class="sr">Aktion</span></th>' + list.map(function (r) { return '<td>' + saveButton(r.dest.id, true) + '</td>'; }).join('') + '</tr>' +
+          '</tbody>' +
+        '</table></div>' +
+      '</section>'
+    );
+    app.querySelectorAll('[data-save]').forEach(function (b) {
+      b.addEventListener('click', function () { toggleSaved(b.getAttribute('data-save')); viewSaved(); });
+    });
+  }
+
+  // ---------- Impressum und Datenschutz (Platzhalter, vor dem Livegang ausfüllen) ----------
+
+  function viewLegal(kind) {
+    var body = kind === 'impressum'
+      ? '<h1>Impressum</h1>' +
+        '<p>Angaben gemäß § 5 DDG</p>' +
+        '<p>[NAME]<br>[STRASSE UND HAUSNUMMER]<br>[PLZ ORT]</p>' +
+        '<p>E-Mail: [E-MAIL-ADRESSE]</p>' +
+        '<p class="hint">Dieser Text ist ein Platzhalter und muss vor der Veröffentlichung ausgefüllt und geprüft werden.</p>'
+      : '<h1>Datenschutz</h1>' +
+        '<p>Deine Antworten im Fragebogen und deine Merkliste werden nur in deinem Browser gespeichert (localStorage) und nicht an uns übertragen.</p>' +
+        '<p>Für Wetterdaten fragt die Seite Open-Meteo an, für Flugpreise und Reisewarnungen unseren Server, der Travelpayouts und das Auswärtige Amt abfragt. Dabei werden Koordinaten, Flughafen-Codes und Reisemonat übertragen, keine persönlichen Daten.</p>' +
+        '<p>Schriften werden von Google Fonts geladen. [PRÜFEN: lokal einbinden, damit keine IP-Adresse an Google geht.]</p>' +
+        '<p>Buchungslinks führen zu Skyscanner, Booking.com oder Aviasales. Dort gelten deren Datenschutzbestimmungen.</p>' +
+        '<p class="hint">Dieser Text ist ein Entwurf und muss vor der Veröffentlichung rechtlich geprüft werden.</p>';
+    render('<article class="legal">' + body + '</article>');
+  }
+
   // ---------- Router ----------
 
   function route() {
@@ -567,10 +708,15 @@
     if (parts[0] === 'fragen') return viewStep(Number(parts[1]) || 1);
     if (parts[0] === 'ergebnisse') return viewResults();
     if (parts[0] === 'ziel' && parts[1]) return viewDetail(parts[1]);
+    if (parts[0] === 'merkliste') return viewSaved();
+    if (parts[0] === 'impressum') return viewLegal('impressum');
+    if (parts[0] === 'datenschutz') return viewLegal('datenschutz');
     viewStart();
   }
 
   document.getElementById('safety-date').textContent = fmtDate(window.TG_SAFETY.fetchedAt.slice(0, 10));
+  updateSavedNav();
+  refreshSafety();
   window.addEventListener('hashchange', route);
   route();
 })();
